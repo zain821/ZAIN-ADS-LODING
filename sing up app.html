@@ -1,0 +1,208 @@
+}<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hack Gang App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Z Animation Page -->
+    <div class="container" id="zScreen">
+        <h1 class="z-text">Z</h1>
+    </div>
+
+    <!-- Image + Loading Page -->
+    <div class="container" id="loadingScreen">
+        <img src="your-image.jpg" alt="Creative Image">
+        <div class="loading-bar"></div>
+    </div>
+
+    <!-- SIGN-UP PAGE -->
+    <div class="container" id="signupPage">
+        <h2>Sign Up</h2>
+        <input type="text" id="username" placeholder="Enter Username">
+        <input type="email" id="email" placeholder="Enter Gmail">
+        <input type="password" id="password" placeholder="Enter Password">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+        <button onclick="signup()">Sign Up</button>
+        <p onclick="showLogin()">Already have an account? Login</p>
+    </div>
+
+    <!-- LOGIN PAGE -->
+    <div class="container" id="loginPage">
+        <h2>Login</h2>
+        <input type="email" id="loginEmail" placeholder="Enter Gmail">
+        <input type="password" id="loginPassword" placeholder="Enter Password">
+        <button onclick="login()">Login</button>
+        <p onclick="showSignup()">Don't have an account? Sign Up</p>
+    </div>
+
+    <!-- WELCOME PAGE -->
+    <div class="container" id="welcomePage">
+        <h1>Welcome Back, <span id="userEmail"></span></h1>
+        <h2>Welcome to Hack Gang</h2>
+    </div>
+
+    <!-- WEBVIEW PAGE -->
+    <div class="container" id="webviewPage">
+        <iframe id="webFrame" src="" frameborder="0"></iframe>
+        <button class="stop-btn" onclick="stopWebview()">STOP</button>
+    </div>
+
+    <!-- STOP PAGE -->
+    <div class="container" id="stopPage">
+        <h2>Process Stopped</h2>
+        <button onclick="startWebview()">START</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html><style>body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: black;
+    color: white;
+}
+
+.container {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    margin: 50px auto;
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    display: none;
+    background: #111;
+}
+
+h2 {
+    color: #00ff00;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+button {
+    background: #00ff00;
+    color: black;
+    border: none;
+    cursor: pointer;
+}
+
+.stop-btn {
+    background: red;
+    color: white;
+}
+
+/* WebView */
+#webFrame {
+    width: 100%;
+    height: 80vh;
+    border: none;
+}</style><script>let webLinks = [
+    "https://www.google.com/search?q=op",
+    "https://www.bing.com/search?q=op",
+    "https://www.yahoo.com/search?q=op"
+];
+
+let webIndex = 0;
+let webInterval;
+
+// **शुरुआत में सिर्फ "Z" दिखेगा**
+document.getElementById("zScreen").style.display = "block";
+
+// **2 सेकंड बाद "Z" गायब होगा और लोडिंग स्क्रीन दिखेगी**
+setTimeout(() => {
+    document.getElementById("zScreen").style.display = "none";
+    document.getElementById("loadingScreen").style.display = "block";
+
+    // **3 सेकंड बाद लोडिंग खत्म होगी और साइनअप पेज दिखेगा**
+    setTimeout(() => {
+        document.getElementById("loadingScreen").style.display = "none";
+        document.getElementById("signupPage").style.display = "block";
+    }, 3000);
+
+}, 2000);
+
+function showLogin() {
+    document.getElementById("signupPage").style.display = "none";
+    document.getElementById("loginPage").style.display = "block";
+}
+
+function showSignup() {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("signupPage").style.display = "block";
+}
+
+function signup() {
+    let username = document.getElementById("username").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    let confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (!username || !email || !password || password !== confirmPassword) {
+        alert("Please fill all fields correctly!");
+        return;
+    }
+
+    localStorage.setItem("email", email);
+    localStorage.setItem("password", password);
+
+    alert("Sign Up Successful!");
+    showLogin();
+}
+
+function login() {
+    let email = document.getElementById("loginEmail").value;
+    let password = document.getElementById("loginPassword").value;
+
+    let storedEmail = localStorage.getItem("email");
+    let storedPassword = localStorage.getItem("password");
+
+    if (email === storedEmail && password === storedPassword) {
+        alert("Welcome Back, " + email + "!");
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("welcomePage").style.display = "block";
+        document.getElementById("userEmail").innerText = email;
+
+        // **5 सेकंड बाद वेलकम पेज हटेगा और वेब व्यू खुलेगा**
+        setTimeout(() => {
+            document.getElementById("welcomePage").style.display = "none";
+            startWebview();
+        }, 5000);
+    } else {
+        alert("Incorrect Email or Password!");
+    }
+}
+
+function startWebview() {
+    document.getElementById("webviewPage").style.display = "block";
+    changeWebview();
+}
+
+function changeWebview() {
+    document.getElementById("webFrame").src = webLinks[webIndex];
+    webIndex = (webIndex + 1) % webLinks.length;
+
+    // **हर 10 सेकंड में लिंक चेंज होगा**
+    webInterval = setTimeout(changeWebview, 10000);
+}
+
+function stopWebview() {
+    document.getElementById("webviewPage").style.display = "none";
+    document.getElementById("stopPage").style.display = "block";
+
+    // **वेब लिंक बदलने की प्रोसेस बंद कर दें**
+    clearTimeout(webInterval);
+}
+
+function startWebviewAgain() {
+    document.getElementById("stopPage").style.display = "none";
+    document.getElementById("webviewPage").style.display = "block";
+    changeWebview();
+}</script>
